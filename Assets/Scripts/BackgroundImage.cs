@@ -27,6 +27,7 @@ public class BackgroundImage : MonoBehaviour
     {
         try
         {
+            #region Connect to database and obtain initial data
             DataBaseManager.CreateAccessibleDB("MainDataBase.s3db");
             connection = DataBaseManager.CreateConection("MainDataBase.s3db");
             connection.Open();
@@ -41,12 +42,13 @@ public class BackgroundImage : MonoBehaviour
                 break;
             }
             reader.Close();
+            #endregion
             sprite = Resources.Load<Sprite>("SentencesImages/" + imageSentence.Image_Id);
             gameObject.GetComponent<SpriteRenderer>().sprite = sprite;
 
             string sentence = imageSentence.Sentence;
             List<string> words = sentence.Split('*').ToList();
-             ImageSenteceFunc.GeneretaWordsSpaceButtons(words, wordSpace, command, 4, canvas);
+            ImageSenteceFunc.GeneretaWordsSpaceButtons(words, wordSpace, command, 4, canvas);
             
             connection.Close();
             connection.Dispose();
