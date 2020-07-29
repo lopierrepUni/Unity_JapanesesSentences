@@ -17,6 +17,7 @@ public class NextButton : MonoBehaviour
     public GameObject BackgroudImage;
     public Button button;
     public Canvas canvas;
+    public Button checkButton;
 
     private List<Button> wordSpaces = new List<Button>();
     private Sprite sprite;
@@ -74,7 +75,7 @@ public class NextButton : MonoBehaviour
                 string sentence = imageSentenceList.ElementAt(questionNumer).Sentence;
                 List<string> words = sentence.Split('*').ToList();
 
-                ImageSenteceFunc.GeneretaWordsSpaceButtons(words, wordSpace, command, 4, canvas);
+                ImageSenteceFunc.GeneretaWordsSpaceButtons(words, wordSpace, command, 4, canvas, checkButton);
                 questionNumer++;
             }
             else

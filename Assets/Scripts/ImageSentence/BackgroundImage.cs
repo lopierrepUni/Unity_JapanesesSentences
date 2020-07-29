@@ -15,6 +15,8 @@ using UnityEngine.UI;
 public class BackgroundImage : MonoBehaviour
 {
     public Button wordSpace;
+    public Button checkButton;
+
     public Canvas canvas;
 
   
@@ -48,7 +50,7 @@ public class BackgroundImage : MonoBehaviour
 
             string sentence = imageSentence.Sentence;
             List<string> words = sentence.Split('*').ToList();
-            ImageSenteceFunc.GeneretaWordsSpaceButtons(words, wordSpace, command, 4, canvas);
+            ImageSenteceFunc.GeneretaWordsSpaceButtons(words, wordSpace, command, 4, canvas, checkButton);
             
             connection.Close();
             connection.Dispose();

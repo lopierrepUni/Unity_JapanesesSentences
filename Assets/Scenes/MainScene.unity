@@ -217,6 +217,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   wordSpace: {fileID: 7664465311515116168, guid: 4634e81858ca61f44bd79f1a9b16172c,
     type: 3}
+  checkButton: {fileID: 1565390642}
   canvas: {fileID: 487472862}
 --- !u!1 &487472859
 GameObject:
@@ -816,6 +817,7 @@ MonoBehaviour:
   BackgroudImage: {fileID: 313543297}
   button: {fileID: 1662161774}
   canvas: {fileID: 487472862}
+  checkButton: {fileID: 1565390642}
 --- !u!114 &1662161774
 MonoBehaviour:
   m_ObjectHideFlags: 0
