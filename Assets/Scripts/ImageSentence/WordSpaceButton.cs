@@ -70,9 +70,7 @@ public class WordSpaceButton : MonoBehaviour
                 answerOptionButton.transform.parent = panel.transform;
                 answerOptionButton.transform.localPosition = new Vector3(0, y, -1);
                 answerOptionButton.GetComponent<RectTransform>().sizeDelta = new Vector2(321.8071f, 100f);
-                List<string> lw = new List<string>();
-                lw.Add(word);
-                answerOptionButton.GetComponent<AnswerOptionButton>().words = lw;
+                answerOptionButton.GetComponent<AnswerOptionButton>().word = word;
                 answerOptionButton.GetComponent<AnswerOptionButton>().wordSpace = button;
                 answerOptionButton.GetComponent<AnswerOptionButton>().panel = panel;
 

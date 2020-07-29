@@ -10,21 +10,20 @@ public class AnswerOptionButton : MonoBehaviour
     public Button wordSpace;
 
 
-    public List<string> words;
     public string word;
     public GameObject panel;
 
     // Start is called before the first frame update
     void Start()
     {
-         //gameObject.GetComponentInChildren<Text>().text = "asdasdasdasd"; 
-         gameObject.GetComponentInChildren<Text>().text = words.ElementAt(0); //paso la palabra como una lista de un solo string porque si paso solo la palabra como una variable tipo string no funciona .-.
+         gameObject.GetComponentInChildren<Text>().text = word; 
+         
          button.onClick.AddListener(DisplayAnswersPanel);
     }
 
     void DisplayAnswersPanel()
     {
-        wordSpace.GetComponentInChildren<Text>().text = words.ElementAt(0);
+        wordSpace.GetComponentInChildren<Text>().text = word;
         Destroy(panel);
     }
 
