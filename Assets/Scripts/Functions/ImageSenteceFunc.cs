@@ -20,7 +20,7 @@ namespace Assets.Scrips.Functions
         private static List<Button> wordSpaces = new List<Button>();
 
 
-        public static List<Button> GeneretaWordsSpaceButtons(List<string> words, Button wordSpace, SqliteCommand command, int NumOfAnswerOptions, Canvas canvas)
+        public static List<Button> GeneretaWordsSpaceButtons(List<string> words, Button wordSpace, SqliteCommand command, int NumOfAnswerOptions, Canvas canvas, Button checkButton)
         {
             try
             {
@@ -78,8 +78,11 @@ namespace Assets.Scrips.Functions
                     wordSpaces.ElementAt(i).name = "WordSpace" + i;
                     wordSpaces.ElementAt(i).transform.parent = canvas.transform;
                     wordSpaces.ElementAt(i).GetComponent<WordSpaceButton>().words = GenereteWordsGroup(words.ElementAt(i), command, NumOfAnswerOptions);
+                    wordSpaces.ElementAt(i).GetComponent<WordSpaceButton>().correctAnswer = words.ElementAt(i);
+
                 }
                 #endregion
+                checkButton.GetComponent<CheckButton>().wordsSpaces = wordSpaces;
                 return wordSpaces;
             }
             catch (Exception e)

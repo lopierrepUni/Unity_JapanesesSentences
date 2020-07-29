@@ -25,6 +25,10 @@ public class NextButton : MonoBehaviour
     private List<ImageSentence> imageSentenceList;
     private int questionNumer = 1;
 
+
+    Vector2 firstPressPos;
+    Vector2 secondPressPos;
+    Vector2 currentSwipe;
     // Start is called before the first frame update
     void Start()
     {
@@ -43,9 +47,9 @@ public class NextButton : MonoBehaviour
                 imageSentenceList.Add(new ImageSentence(reader.GetInt32(0), reader.GetInt32(1), reader.GetString(2)));
             }
             reader.Close();
-            button.onClick.AddListener(NextImage);//adds a listener for when you click the button           
-          
-           
+            button.onClick.AddListener(NextImage);//adds a listener for when you click the button          
+
+
         }
         catch (Exception e)
         {
@@ -60,11 +64,17 @@ public class NextButton : MonoBehaviour
         {
             if (questionNumer < imageSentenceList.Count())
             {
+                GameObject oldPanel = GameObject.FindGameObjectWithTag("OptionAnswerPanel");
+                if (oldPanel != null)
+                {
+                    Destroy(oldPanel);
+                }
                 sprite = Resources.Load<Sprite>("SentencesImages/" + imageSentenceList.ElementAt(questionNumer).Image_Id);
                 BackgroudImage.GetComponent<SpriteRenderer>().sprite = sprite;
                 string sentence = imageSentenceList.ElementAt(questionNumer).Sentence;
                 List<string> words = sentence.Split('*').ToList();
-                ImageSenteceFunc.GeneretaWordsSpaceButtons(words, wordSpace,command, 4, canvas);
+
+                ImageSenteceFunc.GeneretaWordsSpaceButtons(words, wordSpace, command, 4, canvas);
                 questionNumer++;
             }
             else
@@ -82,11 +92,42 @@ public class NextButton : MonoBehaviour
     }
 
 
+    public void Swipe()
+    {
+        if (Input.touches.Length > 0)
+        {
+            Touch t = Input.GetTouch(0);
+            if (t.phase == TouchPhase.Began)
+            {
+                //save began touch 2d point
+                firstPressPos = new Vector2(t.position.x, t.position.y);
+            }
+            if (t.phase == TouchPhase.Ended)
+            {
+                //save ended touch 2d point
+                secondPressPos = new Vector2(t.position.x, t.position.y);
+
+                //create vector from the two points
+                currentSwipe = new Vector3(secondPressPos.x - firstPressPos.x, secondPressPos.y - firstPressPos.y);
+
+                if (Math.Abs(secondPressPos.x - firstPressPos.x)>300)
+                {
+                    NextImage();
+
+                }
+              
+
+
+            }
+        }
+    }
+
+
 
     // Update is called once per frame
     void Update()
     {
-
+        Swipe();
 
     }
 }

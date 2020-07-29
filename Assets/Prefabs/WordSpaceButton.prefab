@@ -129,7 +129,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7664465311515116173}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f7391aec5d25a904c966440b4d5bb3c7, type: 3}
+  m_Script: {fileID: 11500000, guid: 562c69186e17d15409a91bae3bd3b097, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   button: {fileID: 7664465311515116168}
@@ -137,6 +137,7 @@ MonoBehaviour:
     type: 3}
   AnswerOptionButton: {fileID: 8747705802826287080, guid: dac0591817b36a94d8580656213e7128,
     type: 3}
+  canvas12: {fileID: 0}
   words: []
 --- !u!1 &7664465311867153203
 GameObject:

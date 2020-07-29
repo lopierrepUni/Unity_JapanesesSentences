@@ -212,7 +212,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 313543297}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c752c15521ef3da4dba7f08485358000, type: 3}
+  m_Script: {fileID: 11500000, guid: 2ad8742c4fd586e4baccd5279ae876eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   wordSpace: {fileID: 7664465311515116168, guid: 4634e81858ca61f44bd79f1a9b16172c,
@@ -558,6 +558,7 @@ GameObject:
   - component: {fileID: 1565390644}
   - component: {fileID: 1565390643}
   - component: {fileID: 1565390642}
+  - component: {fileID: 1565390645}
   m_Layer: 5
   m_Name: CheckButton
   m_TagString: Untagged
@@ -582,7 +583,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 866.77, y: -290}
+  m_AnchoredPosition: {x: -685, y: 0}
   m_SizeDelta: {x: 186.42883, y: 146.28683}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1565390642
@@ -665,6 +666,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1565390640}
   m_CullTransparentMesh: 0
+--- !u!114 &1565390645
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1565390640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: affdb1bf299cf5146add89a2865927d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  button: {fileID: 1565390642}
+  wordsSpaces: []
 --- !u!1 &1621373312
 GameObject:
   m_ObjectHideFlags: 0
@@ -781,7 +796,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 866.77, y: -451.56}
+  m_AnchoredPosition: {x: -329, y: 175}
   m_SizeDelta: {x: 186.4249, y: 176.8295}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1662161773
@@ -793,7 +808,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1662161771}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8da81499816827641bbd01ca4974ab64, type: 3}
+  m_Script: {fileID: 11500000, guid: 287fd9675cbacd84d9249374646a7f2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   wordSpace: {fileID: 7664465311515116168, guid: 4634e81858ca61f44bd79f1a9b16172c,
