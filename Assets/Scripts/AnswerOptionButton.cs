@@ -11,13 +11,13 @@ public class AnswerOptionButton : MonoBehaviour
     //public List<string> words;
     public string word;
 
-
     // Start is called before the first frame update
     void Start()
     {
-         gameObject.GetComponentInChildren<Text>().text = "asdasdasdasd"; //paso la palabra como una lista de un solo string porque si paso solo la palabra como una variable tipo string no funciona .-.
 
-        // gameObject.GetComponentInChildren<Text>().text = words.ElementAt(0); //paso la palabra como una lista de un solo string porque si paso solo la palabra como una variable tipo string no funciona .-.
+        gameObject.GetComponentInChildren<Text>().text = word; //paso la palabra como una lista de un solo string porque si paso solo la palabra como una variable tipo string no funciona .-.
+
+        //gameObject.GetComponentInChildren<Text>().text = words.ElementAt(0); //paso la palabra como una lista de un solo string porque si paso solo la palabra como una variable tipo string no funciona .-.
         button.onClick.AddListener(DisplayAnswersPanel);
     }
 
