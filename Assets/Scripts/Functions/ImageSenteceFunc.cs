@@ -17,118 +17,129 @@ namespace Assets.Scrips.Functions
 
     public class ImageSenteceFunc : MonoBehaviour
     {
-        private static List<Button> wordSpaces = new List<Button>();
+        private static List<GameObject> SentenceLines = new List<GameObject>();
+        private static List<GameObject> AnswerColums = new List<GameObject>();
 
 
-        public static List<Button> GeneretaWordsSpaceButtons(List<string> words, Button wordSpace, SqliteCommand command, int NumOfAnswerOptions, Canvas canvas, Button checkButton)
+        public static void GeneretaButtons(SqliteCommand command, List<string> words, Button wordSpace, GameObject SentenceLine, GameObject SentencesPanel,
+                                                                                              Button AnswerOption, GameObject AnswersColum, GameObject AnswersColumsPanel)
         {
             try
             {
-                #region Clean old wordspaces
-                foreach (var wordspace in wordSpaces)
-                {
-                    DestroyImmediate(wordspace.gameObject);
-                }
-                wordSpaces.Clear();
-                #endregion
-
-                float y = words.Count <= 500 ? -400 : -300;
-                //First line
-                if (words.Count >= 3)
-                {
-                    wordSpaces.Add(Instantiate(wordSpace, new Vector3(-370f, y, -1), Quaternion.identity));
-                    wordSpaces.Add(Instantiate(wordSpace, new Vector3(0, y, -1), Quaternion.identity));
-                    wordSpaces.Add(Instantiate(wordSpace, new Vector3(370f, y, -1), Quaternion.identity));
-                    if (words.Count >= 4)
-                    {
-                        wordSpaces.Insert(0, Instantiate(wordSpace, new Vector3(-740f, y, -1), Quaternion.identity));
-                        if (words.Count >= 5)
-                        {
-                            wordSpaces.Add(Instantiate(wordSpace, new Vector3(740f, y, -1), Quaternion.identity));
-                            y = y - 1.5f;                           
-                            #region Second Line 
-                            if (words.Count >= 6)
-                            {
-                                wordSpaces.Add(Instantiate(wordSpace, new Vector3(0, y, -1), Quaternion.identity));
-                                if (words.Count >= 7)
-                                {
-
-                                    wordSpaces.Add(Instantiate(wordSpace, new Vector3(-370f, y, -1), Quaternion.identity));
-                                    if (words.Count >= 8)
-                                    {
-                                        wordSpaces.Add(Instantiate(wordSpace, new Vector3(370f, y, -1), Quaternion.identity));
-                                    }
-                                    if (words.Count >= 9)
-                                    {
-                                        wordSpaces.Add(Instantiate(wordSpace, new Vector3(-740f, y, -1), Quaternion.identity));
-                                    }
-                                    if (words.Count >= 10)
-                                    {
-                                        wordSpaces.Add(Instantiate(wordSpace, new Vector3(740f, y, -1), Quaternion.identity));
-                                    }
-                                }
-                            }
-                            #endregion
-                        }
-                    }
-                }
-                #region Set parent, name and group of words
-                for (int i = 0; i < wordSpaces.Count; i++)
-                {
-                    wordSpaces.ElementAt(i).name = "WordSpace" + i;
-                    wordSpaces.ElementAt(i).transform.parent = canvas.transform;
-                    wordSpaces.ElementAt(i).GetComponent<WordSpaceButton>().words = GenereteWordsGroup(words.ElementAt(i), command, NumOfAnswerOptions);
-                    wordSpaces.ElementAt(i).GetComponent<WordSpaceButton>().correctAnswer = words.ElementAt(i);
-
-                }
-                #endregion
-                checkButton.GetComponent<CheckButton>().wordsSpaces = wordSpaces;
-                return wordSpaces;
+                GenerateLines(words, SentencesPanel, SentenceLine, wordSpace, SentenceLines, false);
+                List<string> answerOptions = GenereteWordsGroup(words, command);
+                GenerateLines(answerOptions, AnswersColumsPanel, AnswersColum, AnswerOption, AnswerColums, true);
             }
             catch (Exception e)
             {
 
                 Debug.LogError("Failed: " + e.Message);
-                return null;
+
             }
         }
+        public static void GenerateLines(List<string> words, GameObject bigPanel, GameObject smallPanel, Button button, List<GameObject> oldSmallsPanels, bool answerOptions)
+        {
+            #region Clean old wordspaces
+            foreach (var oldSmallsPanel in oldSmallsPanels)
+            {
+                DestroyImmediate(oldSmallsPanel.gameObject);
+            }
+            oldSmallsPanels.Clear();
+            #endregion
 
-        public static List<string> GenereteWordsGroup(string stringWord, SqliteCommand command, int NumOfAnswerOptions)
+            #region Generate panels
+            int buttonsPerSmallPanel = answerOptions ? 10 : 5;
+            int numLines = (int)Math.Ceiling(((double)words.Count) / buttonsPerSmallPanel);
+
+            int wordNumber = 0;
+            for (int i = 0; i < numLines; i++)
+            {
+                GameObject line = Instantiate(smallPanel);
+                line.transform.parent = bigPanel.transform;
+                SentenceLines.Add(line);
+                #region Generate buttons
+                int num = 1;
+                for (int j = wordNumber; j < wordNumber + buttonsPerSmallPanel; j++)
+                {
+                    Button b = Instantiate(button);
+                    b.transform.parent = line.transform;
+                    if (answerOptions)
+                    {
+                        b.GetComponent<AnswerOptionButton>().word = words.ElementAt(j);
+                        b.name = "AnswerOption" + num;
+                    }
+                    else
+                    {
+                        b.GetComponent<WordSpaceButton>().correctAnswer = words.ElementAt(j);
+                        b.name = "WordSpace" + num;
+                    }
+
+                    num++;
+                }
+                wordNumber = wordNumber + buttonsPerSmallPanel;
+                #endregion
+            }
+            #endregion
+        }
+        public static List<string> GenereteWordsGroup(List<string> words, SqliteCommand command)
         {
             try
             {
-                #region Get word data                
-                string sqlQuery = $@"SELECT * FROM Words WHERE Word='{stringWord}'";
+                #region Generate the list to Sqlite
+                string list = "";
+                foreach (var word in words)
+                {
+                    list = list + $@", '{word}'";
+                }
+                list = list.Substring(2, list.Length - 2);
+                #endregion
+
+                #region Get words data                
+                string sqlQuery = $@"SELECT * FROM Words WHERE Word IN ({list})";
                 command.CommandText = sqlQuery;
                 IDataReader reader = command.ExecuteReader();
-                Word word = null;
+                List<Word> Words = new List<Word>();
                 while (reader.Read())
                 {
-
-                    word = new Word(reader.GetInt32(0), reader.GetString(1), (WordCategory)reader.GetInt32(2), reader.GetInt32(3));
+                    Words.Add(new Word(reader.GetInt32(0), reader.GetString(1), (WordCategory)reader.GetInt32(2), reader.GetInt32(3)));
                 }
                 reader.Close();
-                #endregion 
+                #endregion
 
-                #region Add a NumOfAnswerOptions 
-                sqlQuery = $@"SELECT Word FROM Words WHERE Id IN (SELECT Id FROM Words where Category={(int)word.Category} and Level<={word.Level} and Word<>'{stringWord}' ORDER BY RANDOM() LIMIT {NumOfAnswerOptions - 1})";
+                #region Generate list of words that are not particles
+                list = "";
+                int maxLvl = 0;
+                foreach (var word in Words)
+                {
+                    if (word.Category != WordCategory.Particle)
+                    {
+                        list = list + $@", '{word.stringword}'";
+                    }
+                    maxLvl = word.Level > maxLvl ? word.Level : maxLvl;
+                }
+                list = list.Substring(2, list.Length - 2);
+                #endregion
+
+
+                #region Select a random group of words differents than the originals words that are not partciles
+
+
+                sqlQuery = $@"SELECT Word FROM Words WHERE Id IN (SELECT Id FROM (select * from Words Except select * from Words where Word IN ({list})) where  Level<={maxLvl}  ORDER BY RANDOM() LIMIT 5);";
                 command.CommandText = sqlQuery;
                 reader = command.ExecuteReader();
-                List<string> wordsGroup = new List<string>();
                 while (reader.Read())
                 {
-                    wordsGroup.Add(reader.GetString(0));
+                    words.Add(reader.GetString(0));
                 }
-                wordsGroup.Add(stringWord);
                 #endregion
 
                 #region Shuffle 
                 var rng = new System.Random();
-                wordsGroup=wordsGroup.OrderBy(a => rng.Next()).ToList();
+                words = words.OrderBy(a => rng.Next()).ToList();
                 reader.Close();
                 #endregion
 
-                return wordsGroup;
+                return words;
             }
             catch (Exception e)
             {
