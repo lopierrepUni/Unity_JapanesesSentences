@@ -179,7 +179,7 @@ MonoBehaviour:
   m_ChildAlignment: 0
   m_Spacing: 0
   m_ChildForceExpandWidth: 1
-  m_ChildForceExpandHeight: 1
+  m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
   m_ChildControlHeight: 0
   m_ChildScaleWidth: 0
@@ -834,6 +834,7 @@ MonoBehaviour:
   AnswersColum: {fileID: 2302027337671844666, guid: 8c5369e880612e54f984e44f7ce05ce9,
     type: 3}
   AnswersColumsPanel: {fileID: 192595243}
+  panel: {fileID: 2093240962}
 --- !u!1 &1621373312
 GameObject:
   m_ObjectHideFlags: 0

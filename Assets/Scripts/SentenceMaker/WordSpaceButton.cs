@@ -19,15 +19,15 @@ public class WordSpaceButton : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        GetComponentInChildren<Text>().text = words.ElementAt(0);
-        button.onClick.AddListener(DisplayAnswersPanel);
+        BoxCollider2D box = gameObject.GetComponentInChildren<BoxCollider2D>();
+        box.size = GetComponentInChildren<RectTransform>().sizeDelta;
     }
 
+    //NOT IN USE. Generate answer options for the specific wordSpace
     void DisplayAnswersPanel()
     {
         try
         {
-
             #region Display panel
             Canvas canvas = GameObject.FindGameObjectWithTag("MainCanvas").GetComponent<Canvas>();
             GameObject oldPanel = GameObject.FindGameObjectWithTag("OptionAnswerPanel");
@@ -99,7 +99,6 @@ public class WordSpaceButton : MonoBehaviour
             GetComponentInChildren<Text>().text = $@"<color=#ff0000ff>{currentAnswer}</color>  -  <color=#00ff00ff>{correctAnswer}</color>";
         }
         return correct;
-
     }
 
     // Update is called once per frame

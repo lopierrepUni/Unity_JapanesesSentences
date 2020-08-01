@@ -24,6 +24,8 @@ public class StarTemp : MonoBehaviour
     public GameObject AnswersColum;
     public GameObject AnswersColumsPanel;
 
+    public GameObject panel;
+
     private Sprite sprite;
     private SqliteCommand command;
     private SqliteConnection connection;
@@ -78,7 +80,7 @@ public class StarTemp : MonoBehaviour
             List<string> words = sentence.Split('*').ToList();
        
             ImageSenteceFunc.GeneretaButtons(command, words, WordSpace, SentenceLine, SentencesPanel, AnswerOption, AnswersColum, AnswersColumsPanel);
-           
+            
 
             #endregion
             connection.Close();
@@ -95,7 +97,6 @@ public class StarTemp : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
     }
 
 }
