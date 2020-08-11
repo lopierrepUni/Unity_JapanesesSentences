@@ -8,19 +8,20 @@ namespace Assets.Scrips.Utilities
 {
     public enum WordCategory
     {
-        #region nouns
+       
         Person,
         Activity, //like sports
         Object,
         Place,
-        #endregion
+        
         Time,
         Number,
         Counter,
         Verb,
         Adjective,
         Particle,
-        Adverb,       
+        Adverb,      
+        Food,
 
     }
 }

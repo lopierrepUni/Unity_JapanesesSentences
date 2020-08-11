@@ -6,9 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/SentenceCreatorAllWords.unity
-    guid: ef13f6557de4a764e818f3b159c0f53e
-  - enabled: 0
+    path: Assets/Scenes/MainMenu.unity
+    guid: 13d5e00a2f4397e4f9525348429a4251
+  - enabled: 1
     path: Assets/Scenes/SentencesMaker.unity
     guid: 2cda990e2423bbf4892e6590ba056729
   m_configObjects: {}

@@ -21,23 +21,25 @@ namespace Assets.Scrips.Functions
         private static List<GameObject> AnswerColums = new List<GameObject>();
 
 
-        public static void GeneretaButtons(SqliteCommand command, List<string> words, Button wordSpace, GameObject SentenceLine, GameObject SentencesPanel,
+        public static List<GameObject> GeneretaButtons(SqliteCommand command, string sentence, Button wordSpace, GameObject SentenceLine, GameObject SentencesPanel,
                                                                                               Button AnswerOption, GameObject AnswersColum, GameObject AnswersColumsPanel)
         {
+           
+            List<string> words = sentence.Split('*').ToList();
             try
             {
-                GenerateLines(words, SentencesPanel, SentenceLine, wordSpace, SentenceLines, false);
+                List<GameObject> buttons = GenerateLines(words, SentencesPanel, SentenceLine, wordSpace, SentenceLines, false);
                 List<string> answerOptions = GenereteWordsGroup(words, command);
                 GenerateLines(answerOptions, AnswersColumsPanel, AnswersColum, AnswerOption, AnswerColums, true);
+                return buttons;
             }
             catch (Exception e)
             {
-
                 Debug.LogError("Failed: " + e.Message);
-
+                return null;
             }
         }
-        public static void GenerateLines(List<string> words, GameObject bigPanel, GameObject smallPanel, Button button, List<GameObject> oldSmallsPanels, bool answerOptions)
+        public static List<GameObject> GenerateLines(List<string> words, GameObject bigPanel, GameObject smallPanel, Button button, List<GameObject> oldSmallsPanels, bool answerOptions)
         {
             #region Clean old wordspaces
             foreach (var oldSmallsPanel in oldSmallsPanels)
@@ -48,21 +50,42 @@ namespace Assets.Scrips.Functions
             #endregion
 
             #region Generate panels
-            int buttonsPerSmallPanel = answerOptions ? 10 : 5;
-            int numLines = (int)Math.Ceiling(((double)words.Count) / buttonsPerSmallPanel);
-
+            #region Calculate the buttons per panel
+            int wordsPerLine;
+            if (answerOptions)
+            {
+                wordsPerLine = words.Count < 10 ? words.Count : 10;
+            }
+            else
+            {
+                wordsPerLine = words.Count < 5 ? words.Count : 5;
+            }
+            #endregion
+           
+            int numLines = (int)Math.Ceiling(((double)words.Count) / wordsPerLine);
             int wordNumber = 0;
+            List<GameObject> buttons = new List<GameObject>();
             for (int i = 0; i < numLines; i++)
             {
                 GameObject line = Instantiate(smallPanel);
-                line.transform.parent = bigPanel.transform;
+                line.transform.SetParent(bigPanel.transform,false);
                 SentenceLines.Add(line);
                 #region Generate buttons
                 int num = 1;
-                for (int j = wordNumber; j < wordNumber + buttonsPerSmallPanel; j++)
+               
+                if (numLines > 1)
                 {
-                    Button b = Instantiate(button);
-                    b.transform.parent = line.transform;
+                    wordsPerLine = (int)Math.Ceiling(((double)words.Count) / 2);
+                }
+                
+                    wordsPerLine = wordNumber + wordsPerLine > words.Count ? words.Count : wordNumber + wordsPerLine;
+                
+                for (int j = wordNumber; j < wordsPerLine; j++)
+                {
+                    GameObject b = Instantiate(button).gameObject;
+                    b.transform.SetParent( line.transform, false);
+                    LeanTween.scale(b,new Vector3(1,1,1),0.5f);
+                   // b.transform.parent = line.transform;
                     if (answerOptions)
                     {
                         b.GetComponent<AnswerOptionButton>().word = words.ElementAt(j);
@@ -70,16 +93,18 @@ namespace Assets.Scrips.Functions
                     }
                     else
                     {
-                        b.GetComponent<WordSpaceButton>().correctAnswer = words.ElementAt(j);
+                        b.GetComponent<WordSpaceButton>().SetCorrectAnswer(words.ElementAt(j));
                         b.name = "WordSpace" + num;
                     }
-
+                    buttons.Add(b);
                     num++;
                 }
-                wordNumber = wordNumber + buttonsPerSmallPanel;
+                wordNumber = wordNumber + wordsPerLine;
                 #endregion
+             
             }
             #endregion
+            return buttons;
         }
         public static List<string> GenereteWordsGroup(List<string> words, SqliteCommand command)
         {
@@ -124,7 +149,7 @@ namespace Assets.Scrips.Functions
                 #region Select a random group of words differents than the originals words that are not partciles
 
 
-                sqlQuery = $@"SELECT Word FROM Words WHERE Id IN (SELECT Id FROM (select * from Words Except select * from Words where Word IN ({list})) where  Level<={maxLvl}  ORDER BY RANDOM() LIMIT 5);";
+                sqlQuery = $@"SELECT Word FROM Words WHERE Id IN (SELECT Id FROM (select * from Words Except select * from Words where Word IN ({list})) where  Level<={maxLvl}  ORDER BY RANDOM() LIMIT {Words.Count});";
                 command.CommandText = sqlQuery;
                 reader = command.ExecuteReader();
                 while (reader.Read())

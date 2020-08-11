@@ -8,6 +8,7 @@ TagManager:
   - OptionAnswerPanel
   - MainPanel
   - WordSpace
+  - AnswersColumn
   layers:
   - Default
   - TransparentFX

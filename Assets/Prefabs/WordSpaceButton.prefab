@@ -31,7 +31,7 @@ RectTransform:
   m_GameObject: {fileID: 7664465311515116173}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0, y: 0, z: 1}
   m_Children:
   - {fileID: 7664465311867153212}
   m_Father: {fileID: 0}
@@ -40,7 +40,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -387, y: 324.74}
-  m_SizeDelta: {x: 313.84814, y: 109.63904}
+  m_SizeDelta: {x: 290, y: 109.63904}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7664465311515116170
 CanvasRenderer:
@@ -69,7 +69,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 9a32a6cc2cb803443983d45d4a513506, type: 3}
+  m_Sprite: {fileID: 21300032, guid: 3f6a2db8816d26b47ad689baf293a0df, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -134,13 +134,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 562c69186e17d15409a91bae3bd3b097, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  button: {fileID: 7664465311515116168}
-  AnswersPanel: {fileID: 8798017232199914404, guid: 2e2c7958be7fd46488a102a95dfb6237,
-    type: 3}
-  AnswerOptionButton: {fileID: 8747705802826287080, guid: dac0591817b36a94d8580656213e7128,
-    type: 3}
-  correctAnswer: 
-  words: []
 --- !u!50 &1303018216949997697
 Rigidbody2D:
   serializedVersion: 4
@@ -254,7 +247,7 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 50
+    m_FontSize: 40
     m_FontStyle: 1
     m_BestFit: 0
     m_MinSize: 4

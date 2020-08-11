@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8669114912826803340}
   - component: {fileID: 8669114912826803377}
   - component: {fileID: 8669114912826803342}
-  - component: {fileID: 8669114912826803343}
+  - component: {fileID: -982306679725144771}
   m_Layer: 5
   m_Name: SentenceLine
   m_TagString: Untagged
@@ -75,7 +75,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &8669114912826803343
+--- !u!114 &-982306679725144771
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -93,10 +93,10 @@ MonoBehaviour:
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 4
-  m_Spacing: 20
-  m_ChildForceExpandWidth: 1
+  m_Spacing: 50
+  m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 1
-  m_ChildControlWidth: 1
+  m_ChildControlWidth: 0
   m_ChildControlHeight: 1
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
