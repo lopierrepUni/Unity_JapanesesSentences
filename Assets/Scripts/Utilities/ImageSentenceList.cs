@@ -17,7 +17,6 @@ namespace Assets.Scripts.Utilities
         }
         public static ImageSentence GetSentenceImage()
         {
-
             ImageSentence imageSentence = ImageSentences.ElementAt(0);
             ImageSentences.RemoveAt(0);
             return imageSentence;
@@ -34,6 +33,10 @@ namespace Assets.Scripts.Utilities
         {
             var rng = new System.Random();
             ImageSentences = ImageSentences.OrderBy(a => rng.Next()).ToList();
+        }
+        public static List<ImageSentence> GetList()
+        {
+            return ImageSentences;
         }
 
     }

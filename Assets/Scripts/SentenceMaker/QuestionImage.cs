@@ -32,6 +32,7 @@ public class QuestionImage : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public GameObject ImageCountValue;
     public GameObject ResultsPopup;
     public GameObject ScoreBorad;
+    public Slider progressBar;
 
     public GameObject SwapedImage;
 
@@ -44,7 +45,7 @@ public class QuestionImage : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     private bool Checked;
     private bool touchInImage = false;
     private List<GameObject> WordSpaces;
-    private int score = 0;
+    private float score = 0;
     private Time time;
     private int RemainingQuestions;
     private ImageSentence imageSentence;
@@ -52,12 +53,17 @@ public class QuestionImage : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     private int NumOfCorrectSenteces = 0;
     private int numOfSentecesInLvl = 0;
     private int remainingImages;
+    private bool haveProgress=false;
+    private float fillSpeed= 0.5f;
+    private float actualProgress;
+    private float pointsPerWord;
     // Start is called before the first frame update
     void Start()
     {
         try
         {
             ResultsPopup.transform.localScale = new Vector2(0, 0);
+            progressBar.value = 0;
             #region Connect to database and get initial data for first imageSentence
             DataBaseManager.CreateAccessibleDB("MainDataBase.s3db");
             connection = DataBaseManager.CreateConection("MainDataBase.s3db");
@@ -95,11 +101,23 @@ public class QuestionImage : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
             #endregion
 
+            //Calculate the value of each word
+            var l = ImageSentenceList.GetList();
+            float totalWords = 0;
+            foreach (var item in l)
+            {
+                var words = item.Sentence.Split('*');
+                totalWords += words.Length;
+            }
+            pointsPerWord = 100 / totalWords;
+
             #region Display image and wordSpaces
             GenerateQuestion();
 
             Scorevalue.GetComponentInChildren<Text>().text = score.ToString();
             #endregion
+
+
             //connection.Close();
             //connection.Dispose();
 
@@ -114,6 +132,10 @@ public class QuestionImage : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     void Update()
     {
         Swipe();
+        if (haveProgress && progressBar.value< actualProgress)
+        {
+            progressBar.value += + fillSpeed * Time.deltaTime;
+        }
         if (Input.touchCount <= 0)
         {
             return;
@@ -210,7 +232,7 @@ public class QuestionImage : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         {
             if (wordSpace.GetComponent<WordSpaceButton>().Check())
             {
-                score = score + 10;
+                score = score + pointsPerWord;
                 Scorevalue.GetComponentInChildren<Text>().text = score.ToString();
             }
             else
@@ -275,13 +297,14 @@ public class QuestionImage : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             }
             lastScoreS = $"Best Score: {bestScore}";
             lastTimeS = $"Best Time: {bestTime}";
-
-            float actualProgress = (float)NumOfCorrectSenteces / (float)numOfSentecesInLvl;
+            progressBar.value = lastProgress;
+            actualProgress = (float)NumOfCorrectSenteces / (float)numOfSentecesInLvl;
             string apS = actualProgress.ToString().Replace(",", ".");
             reader.Close();
             if (actualProgress > lastProgress)
             {
-                progressUp = $"+{actualProgress - lastProgress}%";
+                progressUp = $"+{(actualProgress - lastProgress)*100}%";
+                haveProgress = true;
                 sqlQuery = $"UPDATE Progress_Lvl SET Progress = {apS} WHERE Level= {_lvl}";
                 command.CommandText = sqlQuery;
                 command.ExecuteNonQuery();
@@ -291,7 +314,8 @@ public class QuestionImage : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
                 titleS = "NEW RECORD!!";
                 lastScoreS = $"Last Best Score: {bestScore}";
                 lastTimeS = $"Last Best Time: {bestTime}";
-                sqlQuery = $"UPDATE Progress_Lvl SET Best_Score = {score}, Best_Score_Time='{timeString}'WHERE Level= {_lvl}";
+                string scoreSQuery = score.ToString().Replace(",",".");
+                sqlQuery = $"UPDATE Progress_Lvl SET Best_Score = {scoreSQuery}, Best_Score_Time='{timeString}'WHERE Level= {_lvl}";
                 command.CommandText = sqlQuery;
                 command.ExecuteNonQuery();
             }
