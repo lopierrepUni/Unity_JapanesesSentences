@@ -28,6 +28,10 @@ public class QuestionImage : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     public GameObject panel;
     public GameObject Scorevalue;
+    public GameObject TimeValue;
+    public GameObject ImageCountValue;
+    public GameObject ResultsPopup;
+    public GameObject ScoreBorad;
 
     public GameObject SwapedImage;
 
@@ -44,16 +48,16 @@ public class QuestionImage : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     private Time time;
     private int RemainingQuestions;
     private ImageSentence imageSentence;
-    private int lvl;
+    private static int _lvl;
+    private int NumOfCorrectSenteces = 0;
+    private int numOfSentecesInLvl = 0;
+    private int remainingImages;
     // Start is called before the first frame update
     void Start()
     {
         try
         {
-            lvl = StartButton.lvl;
-
-            //
-            
+            ResultsPopup.transform.localScale = new Vector2(0, 0);
             #region Connect to database and get initial data for first imageSentence
             DataBaseManager.CreateAccessibleDB("MainDataBase.s3db");
             connection = DataBaseManager.CreateConection("MainDataBase.s3db");
@@ -74,7 +78,7 @@ public class QuestionImage : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
             #region Get a random imageSentence
 
-            sqlQuery = $@"SELECT * FROM Image_Sentence";
+            sqlQuery = $@"SELECT * FROM Image_Sentence WHERE Level = {_lvl}";
             command.CommandText = sqlQuery;
             reader = command.ExecuteReader();
 
@@ -82,6 +86,9 @@ public class QuestionImage : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             {
                 ImageSentenceList.AddSentenceImage(new ImageSentence(reader.GetInt32(0), reader.GetInt32(1), reader.GetString(2)));
             }
+            numOfSentecesInLvl = ImageSentenceList.Count();
+            remainingImages = numOfSentecesInLvl - 1;
+            ImageCountValue.GetComponentInChildren<Text>().text = remainingImages.ToString();
             ImageSentenceList.Shuffle();
             reader.Close();
             #endregion
@@ -106,8 +113,6 @@ public class QuestionImage : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     // Update is called once per frame
     void Update()
     {
-
-
         Swipe();
         if (Input.touchCount <= 0)
         {
@@ -127,7 +132,14 @@ public class QuestionImage : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
                 }
                 if (ImageSentenceList.Count() == 0)
                 {
-                    Debug.Log("Ultima pregunta");
+                    try
+                    {
+                        FinalScore();
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogError(e.ToString());
+                    }
                 }
 
                 Checked = true;
@@ -161,7 +173,7 @@ public class QuestionImage : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
                             SwapedImage.GetComponent<Image>().sprite = sprite;
                             var color = SwapedImage.GetComponent<Image>().color;
-                            SwapedImage.GetComponent<Image>().color = new Color(color.r,color.g,color.b,255);
+                            SwapedImage.GetComponent<Image>().color = new Color(color.r, color.g, color.b, 255);
 
                             SwapedImage.GetComponent<RectTransform>().sizeDelta = gameObject.GetComponent<RectTransform>().sizeDelta;
                             SwapedImage.GetComponent<RectTransform>().position = gameObject.GetComponent<RectTransform>().position;
@@ -169,15 +181,16 @@ public class QuestionImage : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
                             LeanTween.moveLocalX(SwapedImage, -1920, 0.3f);
                             LeanTween.rotateZ(SwapedImage, 30, 0.3f);
 
-
-
                             GenerateQuestion();
                             panel.GetComponent<HorizontalLayoutGroup>().enabled = true;
                             Checked = false;
+                            remainingImages--;
+                            ImageCountValue.GetComponentInChildren<Text>().text = remainingImages.ToString();
+
                         }
                         else
                         {
-                            Debug.Log("Ultima pregunta");
+                            FinalScore();
                         }
                         touchInImage = false;
                     }
@@ -192,14 +205,22 @@ public class QuestionImage : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     public void Check()
     {
+        bool allOk = true;
         foreach (var wordSpace in WordSpaces)
         {
             if (wordSpace.GetComponent<WordSpaceButton>().Check())
             {
                 score = score + 10;
                 Scorevalue.GetComponentInChildren<Text>().text = score.ToString();
-
             }
+            else
+            {
+                allOk = false;
+            }
+        }
+        if (allOk)
+        {
+            NumOfCorrectSenteces++;
         }
     }
 
@@ -217,11 +238,77 @@ public class QuestionImage : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     {
         touchInImage = true;
     }
-
-
-
+    public static void SetLvl(int lvl)
+    {
+        _lvl = lvl;
+    }
     public void OnEndDrag(PointerEventData eventData)
     {
 
+    }
+    public void FinalScore()
+    {
+        try
+        {
+            TimeValue.GetComponent<Timer>().SetRun(false);
+            string timeString = TimeValue.GetComponentInChildren<Text>().text;
+            string sqlQuery = $"SELECT Progress, Best_Score, Best_Score_Time FROM Progress_Lvl WHERE Level= {_lvl}";
+            command.CommandText = sqlQuery;
+            IDataReader reader = command.ExecuteReader();
+            float lastProgress = 0;
+            int bestScore = 0;
+            string bestTime="";
+            string titleS = "Results";
+            string scoreS = $"Score: {score}";
+            string timeS = $"Time: {timeString}";
+            string lastScoreS;
+            string lastTimeS;
+            string progressUp = "+0%";
+
+            while (reader.Read())
+            {
+                lastProgress = reader.GetFloat(0);
+                bestScore = reader.GetInt32(1);
+                bestTime = reader.GetString(2);
+
+                break;
+            }
+            lastScoreS = $"Best Score: {bestScore}";
+            lastTimeS = $"Best Time: {bestTime}";
+
+            float actualProgress = (float)NumOfCorrectSenteces / (float)numOfSentecesInLvl;
+            string apS = actualProgress.ToString().Replace(",", ".");
+            reader.Close();
+            if (actualProgress > lastProgress)
+            {
+                progressUp = $"+{actualProgress - lastProgress}%";
+                sqlQuery = $"UPDATE Progress_Lvl SET Progress = {apS} WHERE Level= {_lvl}";
+                command.CommandText = sqlQuery;
+                command.ExecuteNonQuery();
+            }
+            if (score > bestScore)
+            {
+                titleS = "NEW RECORD!!";
+                lastScoreS = $"Last Best Score: {bestScore}";
+                lastTimeS = $"Last Best Time: {bestTime}";
+                sqlQuery = $"UPDATE Progress_Lvl SET Best_Score = {score}, Best_Score_Time='{timeString}'WHERE Level= {_lvl}";
+                command.CommandText = sqlQuery;
+                command.ExecuteNonQuery();
+            }
+            ScoreBorad.SetActive(false);
+            ResultsPopup.transform.GetChild(0).GetComponentInChildren<Text>().text = titleS;
+            ResultsPopup.transform.GetChild(1).GetComponentInChildren<Text>().text = scoreS;
+            ResultsPopup.transform.GetChild(2).GetComponentInChildren<Text>().text = timeS;
+            ResultsPopup.transform.GetChild(3).GetComponentInChildren<Text>().text = lastScoreS;
+            ResultsPopup.transform.GetChild(4).GetComponentInChildren<Text>().text = lastTimeS;
+            GameObject progressPanel = ResultsPopup.transform.GetChild(5).gameObject;
+            progressPanel.transform.GetChild(2).GetComponent<Text>().text = progressUp;
+
+            LeanTween.scale(ResultsPopup, new Vector3(1, 1, 0), 0.3f);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError(e.ToString());
+        }
     }
 }

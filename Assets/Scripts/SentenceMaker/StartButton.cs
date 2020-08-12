@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class StartButton : MonoBehaviour
 {
     public Button startButton;
+    public GameObject Lvls;
     public static int lvl;
     // Start is called before the first frame update
     void Start()
@@ -17,7 +18,7 @@ public class StartButton : MonoBehaviour
     }
     void OnClick()
     {
-        SceneManager.LoadScene(1);
+        LeanTween.scale(Lvls, new Vector3(1, 1, 1), 0.2f);
     }
 
     // Update is called once per frame
